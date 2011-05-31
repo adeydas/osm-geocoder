@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/5/trunk/osm-parser/src/br/zuq/osm/parser/model
+END
+Way.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/5/trunk/osm-parser/src/br/zuq/osm/parser/model/Way.java
+END
+OSMNode.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/5/trunk/osm-parser/src/br/zuq/osm/parser/model/OSMNode.java
+END
+Member.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/3/trunk/osm-parser/src/br/zuq/osm/parser/model/Member.java
+END
+AbstractNode.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/5/trunk/osm-parser/src/br/zuq/osm/parser/model/AbstractNode.java
+END
+Relation.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/!svn/ver/5/trunk/osm-parser/src/br/zuq/osm/parser/model/Relation.java
+END
+OSM.java
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/!svn/ver/4/trunk/osm-parser/src/br/zuq/osm/parser/model/OSM.java
+END

@@ -1,0 +1,148 @@
+<project name="Address Geocoding System" default="compile" basedir=".">
+
+	<property name="app.name" value="address-geocoder" />
+	<property name="manager.url" value="http://localhost:8080/manager/" />
+	<property name="manager.username" value="admin" />
+	<property name="manager.password" value="admin" />
+
+	<path id="classpath.standard">
+	    <pathelement location="/usr/share/java/jts-io.jar" />
+    	<pathelement location="/usr/share/java/jts.jar" />
+		<pathelement location="/usr/share/java/commons-utils.jar" />
+		<pathelement location="/usr/share/java/commons-cli.jar" />
+		<pathelement location="/usr/share/java/commons-logging.jar" />
+	    <pathelement location="/usr/share/java/commons-io.jar" />
+		<pathelement location="/usr/share/java/commons-fileupload.jar" />
+		<pathelement location="/usr/share/java/xmlbeans.jar" />
+		<pathelement location="/usr/share/java/xml-apis.jar" />
+		<pathelement location="/usr/share/java/xercesImpl.jar" />
+		<pathelement location="/usr/share/java/postgresql-jdbc3.jar" />
+		<pathelement location="bin" />
+	</path>
+
+	<target name="clean">
+		<delete file="${app.name}.jar" />
+		<delete dir="bin" />
+		<mkdir dir="bin" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="bin" />
+		<java classname="org.apache.xmlbeans.impl.tool.SchemaCompiler" fork="true">
+			<classpath refid="classpath.standard" />
+			<arg value="-srconly" />
+			<arg value="-src" />
+			<arg value="src" />
+			<arg value="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/ADT.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/UOM.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/XLS.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/geometry.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/gml4xls.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/LocationUtilityService.xsd" />
+		</java>
+		<java classname="org.apache.xmlbeans.impl.tool.SchemaCompiler" fork="true">
+			<classpath refid="classpath.standard" />
+			<arg value="-d" />
+			<arg value="bin" />
+			<arg value="-src" />
+			<arg value="src" />
+			<arg value="http://schemas.opengis.net/xlink/1.0.0/xlinks.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/ADT.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/UOM.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/XLS.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/geometry.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/gml4xls.xsd" />
+			<arg value="http://schemas.opengis.net/ols/1.2.0/LocationUtilityService.xsd" />
+		</java>
+		<javac includeAntRuntime="false" srcdir="src" destdir="bin" debug="yes" deprecation="yes" optimize="yes">
+			<compilerarg value="-Xlint:all" />
+			<classpath refid="classpath.standard" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="${app.name}.jar">
+			<fileset dir="src" includes="**/*" />
+			<fileset dir="bin" includes="**/*.class" />
+		</jar>
+	</target>
+
+	<target name="initdb" depends="jar">
+		<!-- <get src="http://www.openstreetmap.org/api/0.6/map?bbox=-0.5,51.35,-0.45,51.4" dest="data.osm" />-->
+		<!-- <java classname="net.sourceforge.jgeocoder.tiger.DatabaseUtils" fork="true">
+			<classpath refid="classpath.standard" />
+			<arg value="./src/ref.sql" />
+		</java> -->
+		<java classname="net.sourceforge.jgeocoder.DataImport" fork="true">
+			<classpath refid="classpath.standard" />
+			<arg value="data.osm" />
+		</java>
+		<delete file="${app.name}.jar" />
+		<!-- <delete file="data.osm" /> -->
+	</target>
+
+	<target name="run" depends="jar">
+		<java classname="net.sourceforge.jgeocoder.test.JGeocoderParserTestClient" fork="true">
+			<classpath refid="classpath.standard" />
+			<arg value="123 6th street philadelphia pa" />
+		</java>
+		<delete file="${app.name}.jar" />
+	</target>
+
+	<target name="war" depends="jar">
+		<mkdir dir="war" />
+	    <mkdir dir="war/WEB-INF/bin" />
+		<copy todir="war">
+			<fileset dir="webapp" />
+		</copy>
+		<copy todir="war/WEB-INF">
+			<fileset dir="bin" />
+		</copy>
+		<copy todir="war/WEB-INF">
+			<fileset dir="src" />
+		</copy>
+		<mkdir dir="war/WEB-INF/lib" />
+		<copy todir="war/WEB-INF/lib">
+		    <fileset file="/usr/share/java/jts-io.jar" />
+    		<fileset file="/usr/share/java/jts.jar" />
+    		<fileset file="/usr/share/java/commons-io.jar" />
+    		<fileset file="/usr/share/java/commons-fileupload.jar" />
+			<fileset file="/usr/share/java/commons-utils.jar" />
+			<fileset file="/usr/share/java/commons-cli.jar" />
+			<fileset file="/usr/share/java/commons-logging.jar" />
+			<fileset file="/usr/share/java/xmlbeans.jar" />
+			<fileset file="/usr/share/java/xml-apis.jar" />
+			<fileset file="/usr/share/java/xercesImpl.jar" />
+			<fileset file="/usr/share/java/postgresql-jdbc3.jar" />
+			<fileset file="${app.name}.jar" />
+		</copy>
+		<jar destfile="${app.name}.war">
+			<fileset dir="war" />
+		</jar>
+		<delete dir="war" />
+		<delete file="${app.name}.jar" />
+	</target>
+
+	<target name="deploy" depends="war">
+		<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+			<classpath>
+				<pathelement location="/usr/share/java/catalina-ant.jar" />
+			</classpath>
+		</taskdef>
+		<deploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/${app.name}" war="${app.name}.war" />
+		<delete file="${app.name}.war" />
+	</target>
+
+	<target name="undeploy">
+		<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
+			<classpath>
+				<pathelement location="/usr/share/java/catalina-ant.jar" />
+			</classpath>
+		</taskdef>
+		<undeploy url="${manager.url}" username="${manager.username}" password="${manager.password}" path="/${app.name}" />
+	</target>
+
+	<target name="redeploy" depends="undeploy,deploy" />
+
+</project>
